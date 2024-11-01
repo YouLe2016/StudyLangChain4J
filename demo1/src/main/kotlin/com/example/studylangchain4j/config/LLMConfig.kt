@@ -1,7 +1,10 @@
 package com.example.studylangchain4j.config
 
+import com.example.studylangchain4j.service.ChatAssistant
 import dev.langchain4j.model.chat.ChatLanguageModel
 import dev.langchain4j.model.openai.OpenAiChatModel
+import dev.langchain4j.service.AiServices
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -23,5 +26,10 @@ class LLMConfig {
             .modelName(modelName)
             .baseUrl(url)
             .build()
+    }
+
+    @Bean
+    fun createChatAssistant(@Qualifier("chatModel") model: ChatLanguageModel): ChatAssistant {
+        return AiServices.create(ChatAssistant::class.java, model)
     }
 }
