@@ -2,14 +2,14 @@ package com.example.studylangchain4j
 
 import dev.langchain4j.data.message.UserMessage
 import dev.langchain4j.model.chat.ChatLanguageModel
-import org.springframework.beans.factory.annotation.Autowired
+import jakarta.annotation.Resource
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import kotlin.test.Test
 
 @SpringBootTest
 class StudyLangChain4JApplicationTest {
-    @Autowired
+    @Resource(name="chatModel")
     private lateinit var chatLanguageModel: ChatLanguageModel
 
     @Value("\${langchain4j.open-ai.chat-model.api-key}")
