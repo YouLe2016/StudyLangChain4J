@@ -1,10 +1,14 @@
 package com.example.studylangchain4j
 
+import dev.langchain4j.data.message.ImageContent
+import dev.langchain4j.data.message.TextContent
 import dev.langchain4j.data.message.UserMessage
 import dev.langchain4j.model.chat.ChatLanguageModel
 import jakarta.annotation.Resource
+import org.springframework.core.io.Resource as Resource1
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
+import java.util.*
 import kotlin.test.Test
 
 @SpringBootTest
@@ -18,6 +22,9 @@ class StudyLangChain4JApplicationTest {
     private lateinit var url: String
     @Value("\${langchain4j.open-ai.chat-model.model-name}")
     private lateinit var modelName: String
+
+    @Value("01.png")
+    private lateinit var resource: Resource1
 
     @Test
     fun test() {
@@ -40,6 +47,18 @@ class StudyLangChain4JApplicationTest {
                 UserMessage.from("进军", "你知道我们的名字吗？"),
             )
         )
+        println(generate.content().text())
+    }
+
+    @Test
+    fun testVLModel() {
+        val byteArray = resource.contentAsByteArray
+        val content = Base64.getEncoder().encodeToString(byteArray)
+        val message = UserMessage.from(
+            TextContent.from("请提取一下图片中的文字"),
+            ImageContent.from(content, "image/png")
+        )
+        val generate = chatLanguageModel.generate(message)
         println(generate.content().text())
     }
 }
