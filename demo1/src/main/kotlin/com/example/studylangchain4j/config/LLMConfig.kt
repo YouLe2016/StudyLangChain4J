@@ -1,5 +1,6 @@
 package com.example.studylangchain4j.config
 
+import com.example.studylangchain4j.listener.MyChatModelListener
 import com.example.studylangchain4j.service.ChatAssistant
 import dev.langchain4j.model.chat.ChatLanguageModel
 import dev.langchain4j.model.openai.OpenAiChatModel
@@ -25,8 +26,13 @@ class LLMConfig {
             .apiKey(apiKey)
             .modelName(modelName)
             .baseUrl(url)
-            .logRequests(true)
-            .logResponses(true)
+            // 开启日志
+//            .logRequests(true)
+//            .logResponses(true)
+            // 添加监听器
+            .listeners(
+                listOf(MyChatModelListener())
+            )
             .build()
     }
 
