@@ -25,6 +25,8 @@ class LLMConfig {
             .apiKey(apiKey)
             .modelName(modelName)
             .baseUrl(url)
+            .logRequests(true)
+            .logResponses(true)
             .build()
     }
 
