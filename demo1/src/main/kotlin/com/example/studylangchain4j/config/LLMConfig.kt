@@ -2,7 +2,9 @@ package com.example.studylangchain4j.config
 
 import com.example.studylangchain4j.listener.MyChatModelListener
 import com.example.studylangchain4j.service.ChatAssistant
+import com.example.studylangchain4j.service.StreamChatAssistant
 import dev.langchain4j.model.chat.ChatLanguageModel
+import dev.langchain4j.model.chat.StreamingChatLanguageModel
 import dev.langchain4j.model.openai.OpenAiChatModel
 import dev.langchain4j.model.openai.OpenAiStreamingChatModel
 import dev.langchain4j.service.AiServices
@@ -43,7 +45,7 @@ class LLMConfig {
     }
 
     @Bean(name=["streamingChatModel"])
-    fun createStreamingChatLanguageModel(): OpenAiStreamingChatModel {
+    fun createStreamingChatLanguageModel(): StreamingChatLanguageModel {
         return OpenAiStreamingChatModel.builder()
             .apiKey(apiKey)
             .modelName(modelName)
@@ -54,5 +56,9 @@ class LLMConfig {
     @Bean
     fun createChatAssistant(@Qualifier("chatModel") model: ChatLanguageModel): ChatAssistant {
         return AiServices.create(ChatAssistant::class.java, model)
+    }
+    @Bean
+    fun createStreamChatAssistant(@Qualifier("streamingChatModel") model: StreamingChatLanguageModel): StreamChatAssistant {
+        return AiServices.create(StreamChatAssistant::class.java, model)
     }
 }
