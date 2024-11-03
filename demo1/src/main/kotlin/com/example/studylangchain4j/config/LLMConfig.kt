@@ -4,6 +4,7 @@ import com.example.studylangchain4j.listener.MyChatModelListener
 import com.example.studylangchain4j.service.ChatAssistant
 import dev.langchain4j.model.chat.ChatLanguageModel
 import dev.langchain4j.model.openai.OpenAiChatModel
+import dev.langchain4j.model.openai.OpenAiStreamingChatModel
 import dev.langchain4j.service.AiServices
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -38,6 +39,15 @@ class LLMConfig {
             .maxRetries(3)
             // 设置超时时间，默认60秒
             .timeout(Duration.ofSeconds(60))
+            .build()
+    }
+
+    @Bean(name=["streamingChatModel"])
+    fun createStreamingChatLanguageModel(): OpenAiStreamingChatModel {
+        return OpenAiStreamingChatModel.builder()
+            .apiKey(apiKey)
+            .modelName(modelName)
+            .baseUrl(url)
             .build()
     }
 

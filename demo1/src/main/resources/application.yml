@@ -6,11 +6,15 @@ spring:
 langchain4j:
   open-ai:
     chat-model:
-      # model-name: qwen-turbo
+      model-name: qwen-turbo
       # 图片理解能力的大模型
-      model-name: qwen-vl-max
+      # model-name: qwen-vl-max
       base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
       # model-name: qwen2.5
-logging:
-  level:
-    root: debug
+    # 这个不能用，不知道为什么，可能知识还不够。以后再说
+    language-model:
+      model-name: qwen-turbo
+      base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
+#logging:
+#  level:
+#    root: debug

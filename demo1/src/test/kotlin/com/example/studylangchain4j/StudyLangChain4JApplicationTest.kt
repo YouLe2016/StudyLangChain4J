@@ -1,20 +1,28 @@
 package com.example.studylangchain4j
 
+import dev.langchain4j.data.message.AiMessage
 import dev.langchain4j.data.message.ImageContent
 import dev.langchain4j.data.message.TextContent
 import dev.langchain4j.data.message.UserMessage
+import dev.langchain4j.model.StreamingResponseHandler
 import dev.langchain4j.model.chat.ChatLanguageModel
+import dev.langchain4j.model.chat.StreamingChatLanguageModel
+import dev.langchain4j.model.output.Response
 import jakarta.annotation.Resource
-import org.springframework.core.io.Resource as Resource1
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import java.util.*
+import java.util.concurrent.CountDownLatch
 import kotlin.test.Test
+import org.springframework.core.io.Resource as Resource1
+
 
 @SpringBootTest
 class StudyLangChain4JApplicationTest {
     @Resource(name="chatModel")
     private lateinit var chatLanguageModel: ChatLanguageModel
+    @Resource(name="streamingChatModel")
+    private lateinit var streamingChatLanguageModel: StreamingChatLanguageModel
 
     @Value("\${langchain4j.open-ai.chat-model.api-key}")
     private lateinit var apiKey: String
@@ -60,5 +68,28 @@ class StudyLangChain4JApplicationTest {
         )
         val generate = chatLanguageModel.generate(message)
         println(generate.content().text())
+    }
+
+    @Test
+    fun testStreaming() {
+        // 在单元测试中防止子线程执行不完
+        val latch = CountDownLatch(1)
+        streamingChatLanguageModel.generate(
+            "河南有什么好玩的地方吗？",
+            object : StreamingResponseHandler<AiMessage> {
+                override fun onNext(token: String) {
+                    println(token)
+                }
+
+                override fun onComplete(response: Response<AiMessage>) {
+                    println(response.content().text())
+                    latch.countDown()
+                }
+
+                override fun onError(error: Throwable) {
+                }
+            }
+        )
+        latch.await()
     }
 }
