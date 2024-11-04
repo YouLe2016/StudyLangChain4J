@@ -3,6 +3,12 @@ spring:
     name: StudyLangChain4J
   profiles:
     include: secrets
+# 解决Controller中返回`Flux<String>`乱码问题
+server:
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
 langchain4j:
   open-ai:
     chat-model:
