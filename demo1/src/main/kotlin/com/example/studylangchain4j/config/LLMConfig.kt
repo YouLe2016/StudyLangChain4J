@@ -3,6 +3,7 @@ package com.example.studylangchain4j.config
 import com.example.studylangchain4j.listener.MyChatModelListener
 import com.example.studylangchain4j.service.ChatAssistant
 import com.example.studylangchain4j.service.StreamChatAssistant
+import dev.langchain4j.memory.chat.MessageWindowChatMemory
 import dev.langchain4j.model.chat.ChatLanguageModel
 import dev.langchain4j.model.chat.StreamingChatLanguageModel
 import dev.langchain4j.model.openai.OpenAiChatModel
@@ -31,12 +32,12 @@ class LLMConfig {
             .modelName(modelName)
             .baseUrl(url)
             // 开启日志
-//            .logRequests(true)
-//            .logResponses(true)
+            .logRequests(true)
+            .logResponses(true)
             // 添加监听器
-            .listeners(
-                listOf(MyChatModelListener())
-            )
+//            .listeners(
+//                listOf(MyChatModelListener())
+//            )
             // 设置重试次数，默认3次
             .maxRetries(3)
             // 设置超时时间，默认60秒
@@ -55,8 +56,15 @@ class LLMConfig {
 
     @Bean
     fun createChatAssistant(@Qualifier("chatModel") model: ChatLanguageModel): ChatAssistant {
-        return AiServices.create(ChatAssistant::class.java, model)
+        // return AiServices.create(ChatAssistant::class.java, model)
+        // 使用记忆缓存
+        val chatMemory = MessageWindowChatMemory.withMaxMessages(10)
+        return AiServices.builder(ChatAssistant::class.java)
+            .chatLanguageModel(model)
+            .chatMemory(chatMemory)
+            .build()
     }
+
     @Bean
     fun createStreamChatAssistant(@Qualifier("streamingChatModel") model: StreamingChatLanguageModel): StreamChatAssistant {
         return AiServices.create(StreamChatAssistant::class.java, model)

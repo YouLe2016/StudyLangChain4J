@@ -17,4 +17,16 @@ class ChatAssistantTest {
         println(chat)
     }
 
+    @Test
+    fun testMemory() {
+        var question = "你好啊, 我的名字叫乐乐"
+        println("question: $question")
+        var answer = chatAssistant.chat(question)
+        println("answer: $answer")
+        question = "我的名字是什么？"
+        println("question: $question")
+        answer = chatAssistant.chat(question)
+        println("answer: $answer")
+    }
+
 }
