@@ -1,6 +1,5 @@
 package com.example.studylangchain4j.config
 
-import com.example.studylangchain4j.listener.MyChatModelListener
 import com.example.studylangchain4j.service.ChatAssistant
 import com.example.studylangchain4j.service.StreamChatAssistant
 import dev.langchain4j.memory.chat.MessageWindowChatMemory
@@ -54,14 +53,28 @@ class LLMConfig {
             .build()
     }
 
+//    @Bean
+//    fun createChatAssistant(@Qualifier("chatModel") model: ChatLanguageModel): ChatAssistant {
+//        return AiServices.create(ChatAssistant::class.java, model)
+//    }
+
+//    @Bean
+//    fun createChatAssistant(@Qualifier("chatModel") model: ChatLanguageModel): ChatAssistant {
+//        val chatMemory = MessageWindowChatMemory.withMaxMessages(10)
+//        return AiServices.builder(ChatAssistant::class.java)
+//            .chatLanguageModel(model)
+//            .chatMemory(chatMemory)
+//            .build()
+//    }
+
     @Bean
     fun createChatAssistant(@Qualifier("chatModel") model: ChatLanguageModel): ChatAssistant {
-        // return AiServices.create(ChatAssistant::class.java, model)
-        // 使用记忆缓存
-        val chatMemory = MessageWindowChatMemory.withMaxMessages(10)
         return AiServices.builder(ChatAssistant::class.java)
             .chatLanguageModel(model)
-            .chatMemory(chatMemory)
+            .chatMemoryProvider {
+                println("chatMemoryProvider: $it")
+                MessageWindowChatMemory.withMaxMessages(10)
+            }
             .build()
     }
 

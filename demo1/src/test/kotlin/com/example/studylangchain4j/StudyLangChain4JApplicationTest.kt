@@ -47,12 +47,14 @@ class StudyLangChain4JApplicationTest {
 
     @Test
     fun testChatMessage() {
+        // 大模型分辨不出来人名，我不知道设置了有什么用
         val generate = chatLanguageModel.generate(
             listOf(
                 UserMessage.from("你好啊，这是谁"),
                 UserMessage.from("进军", "这是我的AI朋友"),
-                UserMessage.from("李白", "好的，问你个问题，咱们现在是几个人在聊天。都说了什么？"),
-                UserMessage.from("进军", "你知道我们的名字吗？"),
+                UserMessage.from("李白", "好的，很开心啊"),
+                UserMessage.from("进军", "李白说了什么？"),
+                UserMessage.from("李白", "进军说了什么？"),
             )
         )
         println(generate.content().text())
