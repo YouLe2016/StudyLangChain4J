@@ -1,6 +1,7 @@
 package com.example.studylangchain4j.config
 
 import com.example.studylangchain4j.service.ChatAssistant
+import com.example.studylangchain4j.service.LegalAssistant
 import com.example.studylangchain4j.service.StreamChatAssistant
 import dev.langchain4j.memory.chat.MessageWindowChatMemory
 import dev.langchain4j.model.chat.ChatLanguageModel
@@ -81,5 +82,10 @@ class LLMConfig {
     @Bean
     fun createStreamChatAssistant(@Qualifier("streamingChatModel") model: StreamingChatLanguageModel): StreamChatAssistant {
         return AiServices.create(StreamChatAssistant::class.java, model)
+    }
+
+    @Bean
+    fun createLegalAssistant(@Qualifier("chatModel") model: ChatLanguageModel): LegalAssistant {
+        return AiServices.create(LegalAssistant::class.java, model)
     }
 }
