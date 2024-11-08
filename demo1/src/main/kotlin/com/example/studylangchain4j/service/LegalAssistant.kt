@@ -14,4 +14,7 @@ interface LegalAssistant {
 
     @SystemMessage(SystemMessage)
     fun answerLegalQuestion(prompt: LegalPrompt): String
+
+    @SystemMessage(SystemMessage)
+    fun answerLegalQuestion2(question: String): String
 }
