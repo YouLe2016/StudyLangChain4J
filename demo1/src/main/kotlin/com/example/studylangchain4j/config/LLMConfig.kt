@@ -41,7 +41,7 @@ class LLMConfig {
             // 设置重试次数，默认3次
             .maxRetries(3)
             // 设置超时时间，默认60秒
-            .timeout(Duration.ofSeconds(60))
+            .timeout(Duration.ofSeconds(30))
             .build()
     }
 
