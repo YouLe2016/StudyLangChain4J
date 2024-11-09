@@ -96,4 +96,9 @@ class LLMConfig {
     fun createNumberExtractor(@Qualifier("chatModel") model: ChatLanguageModel): NumberExtractor {
         return AiServices.create(NumberExtractor::class.java, model)
     }
+
+    @Bean
+    fun createPersonAnalyzer(@Qualifier("chatModel") model: ChatLanguageModel): PersonAnalyzer {
+        return AiServices.create(PersonAnalyzer::class.java, model)
+    }
 }
