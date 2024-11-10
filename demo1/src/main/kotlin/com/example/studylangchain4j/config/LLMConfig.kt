@@ -1,16 +1,14 @@
 package com.example.studylangchain4j.config
 
+import com.example.studylangchain4j.invokehandler.InvoiceHandler
 import com.example.studylangchain4j.service.*
-import dev.langchain4j.agent.tool.JsonSchemaProperty
-import dev.langchain4j.agent.tool.JsonSchemaProperty.description
-import dev.langchain4j.agent.tool.ToolSpecification
+import com.example.studylangchain4j.tools.ToolsFactory
 import dev.langchain4j.memory.chat.MessageWindowChatMemory
 import dev.langchain4j.model.chat.ChatLanguageModel
 import dev.langchain4j.model.chat.StreamingChatLanguageModel
 import dev.langchain4j.model.openai.OpenAiChatModel
 import dev.langchain4j.model.openai.OpenAiStreamingChatModel
 import dev.langchain4j.service.AiServices
-import dev.langchain4j.service.tool.ToolExecutor
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -108,26 +106,14 @@ class LLMConfig {
 
     @Bean
     fun createFunctionAssistant(@Qualifier("chatModel") model: ChatLanguageModel): FunctionAssistant {
-        val toolSpecification = ToolSpecification.builder()
-            .name("invoice_assistant")
-            .description("根据用户提交的开票信息，开具发票")
-            .addParameter("companyName", JsonSchemaProperty.STRING, description("公司名称，纳税人名称"))
-            .addParameter("dutyNumber", JsonSchemaProperty.STRING, description("税号，纳税人识别号"))
-            // 建议使用String类型，再转一下数字类型
-            .addParameter("amount", JsonSchemaProperty.NUMBER, description("金额, 保留两位有效数字"))
-            .build()
-        val toolExecutor = ToolExecutor { toolExecutionRequest, memoryId ->
-            val arguments = toolExecutionRequest.arguments()
-            println("memoryId=$memoryId, arguments =>>>> $arguments")
-            "开票成功"
-        }
         return AiServices.builder(FunctionAssistant::class.java)
             .chatLanguageModel(model)
             .chatMemoryProvider { memoryId ->
                 println("chatMemoryProvider: memoryId=$memoryId")
                 MessageWindowChatMemory.withMaxMessages(10)
             }
-            .tools(mapOf(toolSpecification to toolExecutor))
+//            .tools(ToolsFactory.createInvoiceAssistantTools())
+            .tools(InvoiceHandler())
             .build()
     }
 }
