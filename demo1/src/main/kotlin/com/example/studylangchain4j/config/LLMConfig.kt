@@ -1,16 +1,22 @@
 package com.example.studylangchain4j.config
 
-import com.example.studylangchain4j.invokehandler.InvoiceHandler
 import com.example.studylangchain4j.service.*
 import com.example.studylangchain4j.tools.ToolsFactory
 import dev.langchain4j.agent.tool.graalvm.GraalVmPythonExecutionTool
+import dev.langchain4j.data.segment.TextSegment
 import dev.langchain4j.memory.chat.MessageWindowChatMemory
 import dev.langchain4j.model.chat.ChatLanguageModel
 import dev.langchain4j.model.chat.StreamingChatLanguageModel
+import dev.langchain4j.model.embedding.EmbeddingModel
 import dev.langchain4j.model.openai.OpenAiChatModel
+import dev.langchain4j.model.openai.OpenAiEmbeddingModel
 import dev.langchain4j.model.openai.OpenAiStreamingChatModel
 import dev.langchain4j.service.AiServices
 import dev.langchain4j.service.tool.ToolProviderResult
+import dev.langchain4j.store.embedding.EmbeddingStore
+import dev.langchain4j.store.embedding.qdrant.QdrantEmbeddingStore
+import io.qdrant.client.QdrantClient
+import io.qdrant.client.QdrantGrpcClient
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -28,6 +34,40 @@ class LLMConfig {
 
     @Value("\${langchain4j.open-ai.chat-model.model-name}")
     private lateinit var modelName: String
+
+    @Value("\${langchain4j.open-ai.embedding-model.model-name}")
+    private lateinit var embeddingModelName: String
+
+    @Value("\${langchain4j.open-ai.embedding-model.base-url}")
+    private lateinit var embeddingModelUrl: String
+
+    @Bean
+    fun embeddingModel(): EmbeddingModel {
+        return OpenAiEmbeddingModel.builder()
+            .apiKey(apiKey)
+            .modelName(embeddingModelName)
+            .baseUrl(embeddingModelUrl)
+            .logRequests(true)
+            .logResponses(true)
+            .timeout(Duration.ofSeconds(30))
+            .build()
+    }
+
+    @Bean
+    fun createQdrantClient(): QdrantClient {
+        val qdrantGrpcClient = QdrantGrpcClient.newBuilder("127.0.0.1", 6334, false)
+            .build()
+        return QdrantClient(qdrantGrpcClient)
+    }
+
+    @Bean
+    fun embeddingStore(): EmbeddingStore<TextSegment> {
+        return QdrantEmbeddingStore.builder()
+            .host("127.0.0.1")
+            .port(6334)
+            .collectionName("test")
+            .build()
+    }
 
     @Bean(name = ["chatModel"])
     fun createChatLanguageModel(): ChatLanguageModel {
