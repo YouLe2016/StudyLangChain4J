@@ -9,6 +9,7 @@ import dev.langchain4j.model.chat.StreamingChatLanguageModel
 import dev.langchain4j.model.openai.OpenAiChatModel
 import dev.langchain4j.model.openai.OpenAiStreamingChatModel
 import dev.langchain4j.service.AiServices
+import dev.langchain4j.service.tool.ToolProviderResult
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -20,8 +21,10 @@ import java.time.Duration
 class LLMConfig {
     @Value("\${langchain4j.open-ai.chat-model.api-key}")
     private lateinit var apiKey: String
+
     @Value("\${langchain4j.open-ai.chat-model.base-url}")
     private lateinit var url: String
+
     @Value("\${langchain4j.open-ai.chat-model.model-name}")
     private lateinit var modelName: String
 
@@ -45,7 +48,7 @@ class LLMConfig {
             .build()
     }
 
-    @Bean(name=["streamingChatModel"])
+    @Bean(name = ["streamingChatModel"])
     fun createStreamingChatLanguageModel(): StreamingChatLanguageModel {
         return OpenAiStreamingChatModel.builder()
             .apiKey(apiKey)
@@ -112,8 +115,19 @@ class LLMConfig {
                 println("chatMemoryProvider: memoryId=$memoryId")
                 MessageWindowChatMemory.withMaxMessages(10)
             }
-//            .tools(ToolsFactory.createInvoiceAssistantTools())
-            .tools(InvoiceHandler())
+//             .tools(ToolsFactory.createInvoiceAssistantTools())
+//             .tools(InvoiceHandler())
+            .toolProvider { request ->
+                // 这里好像每一次回复，都会调用一次
+                val message = request.userMessage()
+                println("toolProvider: name=" + message.name())
+                println("toolProvider: singleText=" + message.singleText())
+                // val map = ToolsFactory.createInvoiceAssistantTools().entries.first()
+                ToolProviderResult.builder()
+                    // .add(map.key, map.value)
+                    .addAll(ToolsFactory.createInvoiceAssistantTools())
+                    .build()
+            }
             .build()
     }
 }
