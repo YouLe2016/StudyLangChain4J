@@ -48,4 +48,9 @@ class ChatAssistantTest {
         println("answer2: $answer")
     }
 
+    @Test
+    fun testFunction() {
+        var question = "3.14的平方等于多少？"
+        println("问题: $question \n\n答案: ${chatAssistant.chat(question)}")
+    }
 }

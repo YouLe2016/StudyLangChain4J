@@ -3,6 +3,7 @@ package com.example.studylangchain4j.config
 import com.example.studylangchain4j.invokehandler.InvoiceHandler
 import com.example.studylangchain4j.service.*
 import com.example.studylangchain4j.tools.ToolsFactory
+import dev.langchain4j.agent.tool.graalvm.GraalVmPythonExecutionTool
 import dev.langchain4j.memory.chat.MessageWindowChatMemory
 import dev.langchain4j.model.chat.ChatLanguageModel
 import dev.langchain4j.model.chat.StreamingChatLanguageModel
@@ -79,6 +80,7 @@ class LLMConfig {
                 println("chatMemoryProvider: memoryId=$memoryId")
                 MessageWindowChatMemory.withMaxMessages(10)
             }
+            .tools(GraalVmPythonExecutionTool())
             .build()
     }
 
