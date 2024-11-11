@@ -1,8 +1,12 @@
 package com.example.studylangchain4j.config
 
+import com.example.studylangchain4j.bean.PersonalityTrait
 import com.example.studylangchain4j.service.*
+import com.example.studylangchain4j.tools.PersonalityTraitFactory
 import com.example.studylangchain4j.tools.ToolsFactory
 import dev.langchain4j.agent.tool.graalvm.GraalVmPythonExecutionTool
+import dev.langchain4j.classification.EmbeddingModelTextClassifier
+import dev.langchain4j.classification.TextClassifier
 import dev.langchain4j.data.segment.TextSegment
 import dev.langchain4j.memory.chat.MessageWindowChatMemory
 import dev.langchain4j.model.chat.ChatLanguageModel
@@ -35,6 +39,9 @@ class LLMConfig {
     @Value("\${langchain4j.open-ai.chat-model.model-name}")
     private lateinit var modelName: String
 
+    @Value("\${langchain4j.open-ai.embedding-model.api-key}")
+    private lateinit var embeddingApiKey: String
+
     @Value("\${langchain4j.open-ai.embedding-model.model-name}")
     private lateinit var embeddingModelName: String
 
@@ -44,7 +51,7 @@ class LLMConfig {
     @Bean
     fun embeddingModel(): EmbeddingModel {
         return OpenAiEmbeddingModel.builder()
-            .apiKey(apiKey)
+            .apiKey(embeddingApiKey)
             .modelName(embeddingModelName)
             .baseUrl(embeddingModelUrl)
             .logRequests(true)
@@ -171,5 +178,10 @@ class LLMConfig {
                     .build()
             }
             .build()
+    }
+
+    @Bean
+    fun createTextClassifier(embeddingModel: EmbeddingModel?): TextClassifier<PersonalityTrait> {
+        return EmbeddingModelTextClassifier(embeddingModel, PersonalityTraitFactory.examples)
     }
 }

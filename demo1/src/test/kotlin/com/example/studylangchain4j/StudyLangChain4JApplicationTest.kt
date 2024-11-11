@@ -1,5 +1,7 @@
 package com.example.studylangchain4j
 
+import com.example.studylangchain4j.bean.PersonalityTrait
+import dev.langchain4j.classification.TextClassifier
 import dev.langchain4j.data.message.AiMessage
 import dev.langchain4j.data.message.ImageContent
 import dev.langchain4j.data.message.TextContent
@@ -33,6 +35,9 @@ class StudyLangChain4JApplicationTest {
 
     @Value("01.png")
     private lateinit var resource: Resource1
+
+    @Resource
+    private lateinit var textClassifier: TextClassifier<PersonalityTrait>
 
     @Test
     fun test() {
@@ -94,4 +99,11 @@ class StudyLangChain4JApplicationTest {
         )
         latch.await()
     }
+
+    @Test
+    fun testTextClassifier() {
+        val classify = textClassifier.classify("赠人玫瑰，手有余香")
+        println(classify)
+    }
+
 }
