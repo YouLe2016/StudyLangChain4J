@@ -36,9 +36,6 @@ class StudyLangChain4JApplicationTest {
     @Value("01.png")
     private lateinit var resource: Resource1
 
-    @Resource
-    private lateinit var textClassifier: TextClassifier<PersonalityTrait>
-
     @Test
     fun test() {
         println("api-key=$apiKey")
@@ -99,11 +96,4 @@ class StudyLangChain4JApplicationTest {
         )
         latch.await()
     }
-
-    @Test
-    fun testTextClassifier() {
-        val classify = textClassifier.classify("赠人玫瑰，手有余香")
-        println(classify)
-    }
-
 }

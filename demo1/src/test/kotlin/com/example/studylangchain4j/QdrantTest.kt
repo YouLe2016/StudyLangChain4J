@@ -1,5 +1,7 @@
 package com.example.studylangchain4j
 
+import com.example.studylangchain4j.bean.PersonalityTrait
+import dev.langchain4j.classification.TextClassifier
 import dev.langchain4j.data.embedding.Embedding
 import dev.langchain4j.data.segment.TextSegment
 import dev.langchain4j.model.embedding.EmbeddingModel
@@ -22,6 +24,9 @@ class QdrantTest {
     private lateinit var qdrantClient: QdrantClient
     @Resource
     private lateinit var embeddingStore: EmbeddingStore<TextSegment>
+
+    @Resource
+    private lateinit var textClassifier: TextClassifier<PersonalityTrait>
 
     @Test
     fun testEmbeddingModel() {
@@ -63,5 +68,11 @@ class QdrantTest {
             println("metadata: " + it.embedded().metadata())
             println("----------------")
         }
+    }
+
+    @Test
+    fun testTextClassifier() {
+        val classify = textClassifier.classify("赠人玫瑰，手有余香")
+        println(classify)
     }
 }
