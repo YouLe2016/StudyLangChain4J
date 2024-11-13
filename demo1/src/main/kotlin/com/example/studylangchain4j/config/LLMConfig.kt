@@ -9,12 +9,13 @@ import dev.langchain4j.classification.EmbeddingModelTextClassifier
 import dev.langchain4j.classification.TextClassifier
 import dev.langchain4j.data.segment.TextSegment
 import dev.langchain4j.memory.chat.MessageWindowChatMemory
+import dev.langchain4j.memory.chat.TokenWindowChatMemory
 import dev.langchain4j.model.chat.ChatLanguageModel
 import dev.langchain4j.model.chat.StreamingChatLanguageModel
 import dev.langchain4j.model.embedding.EmbeddingModel
-import dev.langchain4j.model.openai.OpenAiChatModel
-import dev.langchain4j.model.openai.OpenAiEmbeddingModel
-import dev.langchain4j.model.openai.OpenAiStreamingChatModel
+import dev.langchain4j.model.openai.*
+import dev.langchain4j.model.openai.OpenAiModelName.GPT_3_5_TURBO
+import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever
 import dev.langchain4j.service.AiServices
 import dev.langchain4j.service.tool.ToolProviderResult
 import dev.langchain4j.store.embedding.EmbeddingStore
@@ -68,12 +69,17 @@ class LLMConfig {
     }
 
     @Bean
-    fun embeddingStore(): EmbeddingStore<TextSegment> {
+    fun embeddingStore(name: String): EmbeddingStore<TextSegment> {
         return QdrantEmbeddingStore.builder()
             .host("127.0.0.1")
             .port(6334)
-            .collectionName("test")
+            .collectionName(name)
             .build()
+    }
+
+    @Bean
+    fun createCollectionName(): String {
+        return "Truth"
     }
 
     @Bean(name = ["chatModel"])
@@ -181,7 +187,24 @@ class LLMConfig {
     }
 
     @Bean
-    fun createTextClassifier(embeddingModel: EmbeddingModel?): TextClassifier<PersonalityTrait> {
+    fun createTextClassifier(embeddingModel: EmbeddingModel): TextClassifier<PersonalityTrait> {
         return EmbeddingModelTextClassifier(embeddingModel, PersonalityTraitFactory.examples)
+    }
+
+    @Bean
+    fun createTruthAssistant(
+        @Qualifier("chatModel") model: ChatLanguageModel,
+        embeddingStore: EmbeddingStore<TextSegment>,
+        embeddingModel: EmbeddingModel
+    ): TruthAssistant{
+        val retriever = EmbeddingStoreContentRetriever.builder()
+            .embeddingStore(embeddingStore)
+            .embeddingModel(embeddingModel)
+            .build()
+        return AiServices.builder(TruthAssistant::class.java)
+            .chatLanguageModel(model)
+            .chatMemory(MessageWindowChatMemory.withMaxMessages(20))
+            .contentRetriever(retriever)
+            .build()
     }
 }

@@ -28,6 +28,9 @@ class QdrantTest {
     @Resource
     private lateinit var textClassifier: TextClassifier<PersonalityTrait>
 
+    @Resource
+    private lateinit var collectionName: String
+
     @Test
     fun testEmbeddingModel() {
         val embed: Response<Embedding> = embeddingModel.embed("你好啊")
@@ -41,7 +44,7 @@ class QdrantTest {
             .setDistance(Collections.Distance.Cosine)
             .setSize(1024)
             .build();
-        qdrantClient.createCollectionAsync("test", vectorParams)
+        qdrantClient.createCollectionAsync(collectionName, vectorParams)
     }
 
     @Test
